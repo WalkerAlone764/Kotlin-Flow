@@ -10,13 +10,15 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 
-class MainViewModel: ViewModel() {
+class MainViewModel : ViewModel() {
 
 
     var timer by mutableIntStateOf(0)
         private set
 
-    val countDownFlow  = flow<Int> {
+
+    // cold flow - only work when there is any subscriber
+    val countDownFlow = flow<Int> {
         val startingValue = 10
         var currentValue = startingValue
         emit(startingValue)
@@ -27,12 +29,15 @@ class MainViewModel: ViewModel() {
         }
     }
 
+
     init {
         collectFlow()
     }
 
     private fun collectFlow() {
         viewModelScope.launch {
+
+            //collect - collect all and collectLatest - collect only the latest value
             countDownFlow.collectLatest {
                 timer = it
             }
